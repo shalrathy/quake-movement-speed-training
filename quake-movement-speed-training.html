@@ -1,0 +1,421 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body { max-width:800px; margin:40px auto; line-height:1.6 }
+    </style>
+    <title>Quake Movement Speed Training</title>
+  </head>
+  <body>
+    <h1>Quake Movement Speed Training</h1>
+
+    <p>Demonstrations and tips for realizing Quake movement speed techniques explained in
+      "<a href="https://www.youtube.com/watch?v=v3zT3Z5apaM">The code behind Quake's
+        movement tricks explained (bunny-hopping, wallhugging, and zigzagging)</a>"
+      by <a href="https://www.youtube.com/c/MattsRamblings">Matt's Ramblings</a>, using
+      visual elements
+      from <a href="https://github.com/shalrathy/quakespasm-shalrathy">quakespasm-shalrathy</a>.</p>
+
+    <p>The demonstrations are all done on the map "100m.bsp"
+      from <a href="https://quake.speeddemosarchive.com/quake/otherdemos/demos.php?records=bunny">SDA
+      Bunny Comparison</a>. This is a good map to train on because its open, brightly lit,
+      and have many demos to see how others are using movement speed techniques and
+      compare your progress against.</p>
+
+    <nav>
+      <h2>Table of contents</h2>
+      <ul>
+        <li><a href=#visual_elements>Speed visual elements in quakespasm-shalrathy</a></li>
+        <li><a href=#speed_turning>Speed turning</a></li>
+        <li><a href=#zigzagging>Zigzagging</a></li>
+        <li><a href=#wallhugging>Wallhugging</a></li>
+        <li><a href=#circle_jumping>Circle-jumping</a></li>
+        <li><a href=#bunny_hopping>Bunny hopping</a></li>
+        <li><a href=#power_bunny_hopping>Power bunny hopping</a></li>
+        <li><a href=#more>More</a></li>
+      </ul>
+    </nav>
+    
+    <h2 id=visual_elements>Speed visual elements in quakespasm-shalrathy</h2>
+
+    Commands:
+    <ul>
+      <li><tt>scr_speed 4</tt>: Draw speed text and plots.</li>
+      <li><tt>scr_speed_scale 5</tt>: Increase size of speed text and plots.</li>
+      <li><tt>scr_speed_history 100</tt>: Change time plots record, 100 is 10
+        seconds.</li>
+      <li><tt>scr_speed_minspeed 400</tt>: Set min speed to 400 in the speed time
+        plot.</li>
+      <li><tt>scr_speed_angles 180</tt>: Change shown view angles in plots, 180 means 180
+        degrees left and right.</li>
+      <li><tt>sv_bunnyhopqw 1</tt>: Emulate QuakeWorld bunny hopping by not applying
+        friction between bunny hops (0 to disable).</li>
+      <li><tt>host_framerate 0.01</tt>: Slow down game, lower numbers slows down game more.</li>
+    </ul>
+    
+    Legend:
+    <ul>
+      <li><em>speed=540</em>: Current speed.</li>
+      <li><em>avgspeed=506</em>: Average speed of history (<tt>scr_speed_history 100</tt>
+        is 10 seconds).</li>
+      <li><em>maxspeed=545</em>: Maximum seen speed since last standstill.</li>
+      <li><em>Speed history plot</em>: X-axis is time, y-axis is speed.</li>
+      <li><em>Speed angle now</em>: X-axis is horizontal view angle (center is 0 degrees
+        (looking same direction you are moving), left/right is if you looked
+        left/right). Y-axis is speed gain for the given horizontal view angle.</li>
+      <li><em>Speed angle jump</em>: Speed angle at the point in time of the previous
+        jump.</li>
+      <li><em>Speed angle land</em>: Speed angle at the point in time of the previous
+        landing back on ground.</li>
+      <li><em>Speed angle goodness history</em>: X-axis is time, y-axis is how many
+        degrees away from the angle that would give the most speed.</li>
+      <li><em>Plot max</em>: Maximum y value.</li>
+      <li><em>Plot min</em>: Minimum y value.</li>
+      <li><em>Plot current</em>: Current y value.</li>
+    </ul>
+    
+    <img src=speed_gui.png>
+
+    <h2 id=speed_turning>Speed turning</h2>
+
+    <p>Turning increases speed. Different turning angles increases speed differently. Walking
+      straight have a speed of 320. By turning with the keyboard or mouse we can reach
+      speeds up to 493. Pay attention to the "Speed angle plot" to see which turning angle
+      give the most speed.</p>
+
+    <p>The best view angle is the same whether moving forward and strafing to one side, or
+      when only moving forward. But strafing makes jumping be more forward, this is useful
+      for circle jumping.</p>
+    
+    <figure>
+      <video controls loop autoplay muted><source src=turning_cl_anglespeedkey_1.5.webm /></video>
+      <figcaption>Increase speed up to 418 by turning (<tt>cl_anglespeedkey 1.5</tt>
+        (default)).<br/>"Speed angle now" plot shows that if we turned more we would gain more
+        speed.</figcaption>
+    </figure>
+    
+    <figure>
+      <video controls loop autoplay muted><source src=turning_cl_anglespeedkey_3.0.webm /></video>
+      <figcaption>Increase speed up to 380 by turning too much (<tt>cl_anglespeedkey
+          3.0</tt>).<br/>"Speed angle now" plot shows that if we turned less we would gain more
+        speed.</figcaption>
+    </figure>
+    
+    <figure>
+      <video controls loop autoplay muted><source src=turning_cl_anglespeedkey_2.15.webm /></video>
+      <figcaption>Increase speed up to 493 by turning just the right amount
+        (<tt>cl_anglespeedkey 2.15</tt>).<br/>"Speed angle now" plot shows that turning
+        more or less would decrease our speed.</figcaption>
+    </figure>
+
+    <p>To train speed turning you can look at the "speed angle now" plot while turning the
+      mouse. Make a constant turning angle that keeps the "speed angle now" plot center at
+      the peak speed increase. You can use <tt>scr_draw_angles 45</tt> to better see the
+      speed peak in the "speed angle now" plot. Using <tt>host_framerate 0.005</tt> more clearly shows
+      the best turning speed, but the timing is different so training with slowmo is
+      unproductive. Speed turning is unlikely to be helpful in real Quake situations.</p>
+    
+    <h2 id=zigzagging>Zigzagging</h2>
+
+    <p>Strafing left and right in quick succession increases speed up to 405.</p>
+    
+    <figure>
+      <video controls loop autoplay muted><source src=zigzag_realtime.webm /></video>
+      <figcaption>Quickly strafing left and right increases speed up to 405.<br/>The speed
+        history plot shows speed increases with big fluctuations.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted><source src=zigzag_one_zig_one_zag.webm /></video>
+      <figcaption>Slowmo. The "Speed angle now" plot first shows speed increase up to
+        320 by going forward.<br/>Then when strafing the "speed angle now" plot momentarily
+        change shape the current view angle quickly goes past a peak of speed increase.</figcaption>
+    </figure>
+    
+    <figure>
+      <video controls loop autoplay muted><source src=zigzag_slowmo.webm /></video>
+      <figcaption>Slowmo. The "Speed angle now" plot show that we get a momentary
+        increase in speed by strafing in one direction, and get another momentary increase in
+        speed by strafing in the opposite direction, when the angle has gone past the speed
+        increase peak.</figcaption>
+    </figure>
+
+    <p>To train zigzagging just hit strafe keys as fast as possible. I do not think human
+      reaction times will be fast enough to reduce speed. Zigzagging is the technique
+      giving the slowest speed increase, so only use it when other techniques wont work.</p>
+    
+    <h2 id=wallhugging>Wallhugging</h2>
+
+    <p>Going forward and strafing into a wall increases speed up to 465. Speed increase
+      changes depending on your horizontal view angle.</p>
+
+    <figure>
+      <video controls loop autoplay muted><source src=wallhugging.webm /></video>
+      <figcaption>Maximize speed by moving the horizontal view angle so the peak value in
+        "speed angle now" is in the center of the plot.</figcaption>
+    </figure>
+    
+    <p>To train wallhugging walk against walls on the left and right and find the perfect
+      viewing angle by looking at the "speed angle now" plot. You can
+      use <tt>scr_draw_angles 45</tt> to better see the speed peak in the "speed angle now"
+      plot.</p>
+    
+    <h2 id=circle_jumping>Circle-jumping</h2>
+
+    <p>Circle jumping or strafe jumping is just speed turning and jumping to keep the
+      increased speed while in the air. Like speed turning it can increase speed up to
+      493. But the increased speed is kept while in the air, and while going a specific
+      direction.</p>
+    
+    <p>Getting maximum speed increase of 493 requires turning about 270 degrees. Turning fewer
+      degrees gets less speed but avoids looking backwards, which adds up to more forward
+      speed overall.</p>
+    
+    <figure>
+      <video controls loop autoplay muted><source src=circlejump_realtime.webm /></video>
+      <figcaption>A turn of about 90 degrees giving a speed of 466.<br/>The "speed angle
+        now" plot shows that the turning angle is near the peak speed increase for the
+        turning part of the circle jump. <br/>The "speed angle jump" plot shows that the
+        jump happened when the turning angle was near a peak, but it happens too fast to
+        properly tell.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted><source src=circlejump_slow.webm /></video>
+      <figcaption>Slowed down version of circle jump of about 90 degrees giving a speed of
+        459.<br/>The "speed angle now" plot shows that the turning angle is near the peak
+        speed increase for the turning part of the circle jump.<br/>The "speed angle jump"
+        plot shows that the jump happened when the turning angle was near a peak.<br/>This
+        was more difficult for me than the real-time circle-jump because the slowmo
+        turning timing is different.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=circlejump_cl_anglespeedkey_2.15.webm /></video>
+      <figcaption>200 degree perfect circle-jump using only keyboard with <tt>cl_anglespeedkey
+          2.15</tt>.</figcaption>
+    </figure>
+
+    <p>To train circle-jumping you can split it up into two steps:
+      <ol>
+        <li>Do circle-jumps but focus on the "speed angle jump" plot and ensure you
+          jump when the view angle is close to the peak speed increase.</li>
+        <li>Do circle-jumps but focus on consistent change in your view angle. Try
+          different turning speeds to maximize <tt>maxspeed</tt>.</li>
+    </ol></p>
+
+    <p>Other tips:
+      <ul>
+        <li>Move forward a bit to get up to speed 320 before starting the turn into the circle
+          jump.</li>
+        <li>Bind key to <tt>restart</tt> to quickly make many attempts from a consistent state.</li>
+        <li>Do many circle-jumps right after each other to train circle-jumping in different situations.</li>
+        <li>Train circle-jumping turning both directions.</li>
+        <li>Circle-jumping require many things happening very quickly and very
+          precisely. The only way to train it is to build muscle memory.</li>
+    </ul></p>
+
+    <h2 id=bunny_hopping>Bunny hopping</h2>
+    
+    <p>Bunny hopping is continually jumping while speed turning in the air to gain
+      speed. Bunny hopping can increase speed up to about 500 before friction from
+      being on the ground between jumps reduces speed more than it can be increased in
+      the air.</p>
+    
+    <p>Speed turning in the air is slightly vs on the ground has differences: The optimal
+      view angle is different. The optimal view angle is not the same when only strafing
+      vs. when moving forward and strafing. And the possible speed increase in the air is
+      less than on the ground.</p>
+
+    <p>A good approach to increasing speed in the air is to not move forward but only
+      strafe in a direction. The view angle should continually turn towards the
+      strafing direction. To move forward instead of jumping around in a circle you
+      often change strafe direction and the view angle turning direction.</p>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=bunnyhop_strafe_and_turn_netquake.webm /></video>
+      <figcaption>Bunny-hopping by gaining speed the air using speed turning while only
+        strafing. <br/>The "speed angle now" plot has tiny peaks of speed increase that
+        quickly move away from the viewing angle. The small speed increases quickly adds
+        up because there is no friction in the air. <br/>The "speed history" shows that we
+        lose speed when landing, and when switching the strafe direction, and that we lose
+        more speed the faster we are going. <br/>To get a high speed there are some wild
+        turns which means the forward speed is also reduced. Switching strafing direction
+        more often will reduce wild turning but requires more complex button
+        mashing.</figcaption>
+    </figure>
+
+    <p>Bunny hopping is different in QuakeWorld and
+      Netquake/Dosquake/Winquake/GLquake/Regular quake/rq. In QuakeWorld there is no
+      ground friction when bunny hopping. This difference means that bunny hopping in
+      QuakeWorld does not require as precise speed turning to gain speed, and it means
+      there is no limit to how much speed can be gained with bunny hopping.</p>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=bunnyhop_strafe_and_turn_qw.webm /></video>
+      <figcaption>Bunny hopping in emulated QuakeWorld (<tt>sv_bunnyhopqw 1</tt>). Final
+        speed is 721 compared to the Netquake speed of 501.</figcaption>
+    </figure>
+
+    <p>Training bunny hopping tips:
+      <ul>
+        <li>Pressing and holding jump while in the air will jump as soon as you land. So
+          when bunny hopping you can release and press and hold the jump button at any point
+          in the air. This means you do not have to jump exactly when you land.</li>
+        <li>Train on a big open map like <tt>100m.bsp</tt>.</li>
+        <li>Start bunny hopping from a stand-still. Bunny hopping gets more difficult the
+          faster you move, so starting with speed 460 (from a good circle-jump) means you
+          have to have perfect bunny hopping turning before seeing any effect. If you
+          instead start with speed 0 or speed 320 (from walking forward) you can more
+          easily see when you are optimally turning the view angle.</li>
+        <li>Start without changing strafing direction until you get a feel for optimally
+          turning the view angle.</li>
+        <li>Bunny hopping require many things happening very quickly and very
+          precisely. The only way to train it is to build muscle memory.</li>
+      </ul>
+    </p>
+    
+    <h2 id=power_bunny_hopping>Power bunny hopping</h2>
+
+    <p>Power bunny hopping is bunny hopping but also briefly holding forward when landing
+      to avoid loosing speed due to friction. Power bunny hopping can increase speeds to
+      about 700. Ground friction is still a problem because the required view angle have
+      to be so precise at high speeds.</p>
+
+    <p>Power bunny hopping is not required for QuakeWorld. There is no ground friction so
+      regular bunny hopping in QuakeWorld is faster than power bunny hopping in
+      Netquake.</p>
+
+    <p>Power bunny hopping requires that "Always run" is off and run is always enabled. To
+      ensure this is the case, run the commands <tt>cl_alwaysrun 0</tt>
+      and <tt>+speed</tt>.</p>
+
+    <p>Power bunny hopping is still speed turning. But speed turning is different in the
+      air vs. on the ground, and we are only on the ground for one game tick. The optimal
+      view angle when on the ground, and moving forward, and strafing, and moving above
+      450 is looking almost forward. The optimal view angle when in the air, and not
+      moving forward, and strafing is continually turning into the strafing direction. So
+      power bunny hopping requires quickly and precisely switching between these two types
+      of speed turning.</p>
+
+    <p>The more speed you have the more ground friction reduces speed. This means that
+      getting a single power bunny hop can take away all speed increases from several
+      perfect speed power bunny hops. The faster you move the more friction reduces speed
+      and the harder it is to hit good landings. This makes power bunny hopping difficult
+      to use in general Quake situations.</p>
+    
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=powerbunnyhop_only_look.webm /></video>
+      <figcaption>Starting from walking speed. Only do the power part of power bunny
+        hopping, so no speed turning in the air. <br/>The "Angle speed jump" plot shows
+        that the view angle when jumping. The plot also shows that the peak speed increase
+        in the plot decreases as speed increases. <br/>The "Speed history" plot shows that
+        speed is kept constant while in the air, and when landing the speed is
+        increased. <br/>Max speed reached was 433.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=powerbunnyhop_from_walk.webm /></video>
+      <figcaption>Power bunny hopping starting from walking speed. <br/>The "Angle speed jump"
+        plot shows that the speed increase peaks become smaller as speed increases, and
+        the peaks get steeper making it more difficult to set the view angle correctly.
+        <br/>The "Speed history" plot shows that speed continually increases a little due to
+        speed turning in the air. And that the speed increases a bit more when jumping,
+        but these jump speed increases decreases as speed gets above 500 because the view
+        angle is not perfect.<br/> Max speed reached was 503.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=powerbunnyhop_from_circlejump.webm /></video>
+      <figcaption>Power bunny hopping starting with circle jump. <br/>The "Angle speed
+        jump" plot shows that the view angle is good most of the time. But even so the
+        speed does not get above 566. <br/>The "Speed history" plot shows heavy
+        fluctuations because tiny mistakes decrease speed significantly when going fast
+        enough. <br/> Max speed reached was 566 and the final time was about
+        0:10.80.</figcaption>
+    </figure>
+    
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=powerbunnyhop_from_circlejump_100m_crashfort.dem.webm /></video>
+      <figcaption>Current best 100m time by Crashfort. <br/>Demos does not record key presses
+        so the view angle calculation is missing. But the "Speed history" plot shows how
+        much speed is possible.<br/>Max speed reached was 672 and the final time was
+        0:09.59.</figcaption>
+    </figure>
+
+    <p>Training power bunny hopping tips:
+      <ul>
+        <li>Start with a circle-jump. The view angle is pretty consistently straight
+          forward above speed 450. But below this speed the view angle is further away from
+          forward and having to learn multiple view angles is difficult.</li>
+        <li>Train on a big open map like <tt>100m.bsp</tt>.</li>
+        <li>Train while always holding forward down. This means speed turning in the air
+          wont work. But its fewer keys to press so it partly builds muscle memory for
+          some of the button mashing.</li>
+        <li>Train without doing speed turning, to build muscle memory for the landing view
+          angle.</li>
+        <li>Slow down game with <tt>host_framerate 0.01</tt> to give yourself time to
+          press all the required buttons. The different game speed messes up the muscle
+          memory for view angle turning. So after building muscle memory for the
+          complicated button mashing, expect having to retrain the view angle
+          turning.</li>
+        <li>Train by only attempting a power bunny hop every second jump. This reduces the
+          button masking while building muscle memory. Look at the "Speed history" plot
+          for big decrease in speed to check if you missed the landing view angle.</li>
+        <li>Bunny hopping require many things happening very quickly and very
+          precisely. The only way to train it is to build muscle memory.</li>
+      </ul>
+    </p>
+
+    <h2 id=more>More</h2>
+    Quake speed techniques resources:
+    <ul>
+      <li>"<a href="https://www.youtube.com/watch?v=v3zT3Z5apaM">The code behind Quake's
+          movement tricks explained (bunny-hopping, wallhugging, and zigzagging)</a>"
+        from <a href="https://www.youtube.com/c/MattsRamblings">Matt's Ramblings</a>:
+        Technical and visual guide to Quake speed turning techniques.</li>
+      <li><a href="https://www.youtube.com/watch?v=Yjh-9ExEcp0">Quake - Power
+          Bunnyhopping</a>: Discusses power bunny hopping. Is for Netquake.</li>
+      <li><a href="https://kb.speeddemosarchive.com/Quake">Speed Demos
+          Archive Knowledge Base: Quake</a>: Short but broad guide to techniques.</li>
+      <li><a href="https://quake.speeddemosarchive.com/quake/otherdemos/demos.php?records=bunny">SDA
+          Bunny Comparison</a>: Demos of several methods of doing power bunny
+        hopping.</li>
+      <li><a href="https://www.youtube.com/watch?v=zPPn8xrjHKw">Quake Bunny Hopping
+          Mechanics Explained</a>: Thorough practical explanation of bunny hopping.</li>
+      <li><a href="https://www.youtube.com/watch?v=v6jm9iGW2Co">Quake 1: Guide to bunny
+          hop</a>: A upload of old video. It talk about QuakeWorld, so its bunny hopping guide
+        wont help much for Netquake.</li>
+    </ul>
+
+    <h2 id=document>Document</h2>
+    <p>Original author is shalrathy, shalrathy@gmail.com,
+    <a href=https://github.com/shalrathy>https://github.com/shalrathy</a>.</p>
+
+    <p>History:
+      <ul>
+        <li>2022-07-24: Version 1.
+      </ul>
+    </p>
+    <p xmlns:dct="http://purl.org/dc/terms/">
+      <a rel="license"
+         href="http://creativecommons.org/publicdomain/zero/1.0/">
+        <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
+      </a>
+      <br />
+      To the extent possible under law,
+      <span resource="[_:publisher]" rel="dct:publisher">
+        <span property="dct:title">shalrathy</span></span>
+      has waived all copyright and related or neighboring rights to
+      <span property="dct:title">Quake Movement Speed Training</span>.
+    </p>
+    
+  </body>
+</html>
