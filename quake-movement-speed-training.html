@@ -32,6 +32,7 @@
         <li><a href=#circle_jumping>Circle-jumping</a></li>
         <li><a href=#bunny_hopping>Bunny hopping</a></li>
         <li><a href=#power_bunny_hopping>Power bunny hopping</a></li>
+        <li><a href=#tas>Tool assisted speed</a></li>
         <li><a href=#more>More</a></li>
       </ul>
     </nav>
@@ -176,7 +177,7 @@
       <figcaption>A turn of about 90 degrees giving a speed of 466.<br/>The "speed angle
         now" plot shows that the turning angle is near the peak speed increase for the
         turning part of the circle jump. <br/>The "speed angle jump" plot shows that the
-        jump happened when the turning angle was near a peak, but it happens too fast to
+        jump happened when the turning angle is near a peak, but it happens too fast to
         properly tell.</figcaption>
     </figure>
 
@@ -185,8 +186,8 @@
       <figcaption>Slowed down version of circle jump of about 90 degrees giving a speed of
         459.<br/>The "speed angle now" plot shows that the turning angle is near the peak
         speed increase for the turning part of the circle jump.<br/>The "speed angle jump"
-        plot shows that the jump happened when the turning angle was near a peak.<br/>This
-        was more difficult for me than the real-time circle-jump because the slowmo
+        plot shows that the jump happened when the turning angle is near a peak.<br/>This
+        is more difficult for me than the real-time circle-jump because the slowmo
         turning timing is different.</figcaption>
     </figure>
 
@@ -315,7 +316,7 @@
         that the view angle when jumping. The plot also shows that the peak speed increase
         in the plot decreases as speed increases. <br/>The "Speed history" plot shows that
         speed is kept constant while in the air, and when landing the speed is
-        increased. <br/>Max speed reached was 433.</figcaption>
+        increased. <br/>Max speed reached is 433.</figcaption>
     </figure>
 
     <figure>
@@ -327,7 +328,7 @@
         <br/>The "Speed history" plot shows that speed continually increases a little due to
         speed turning in the air. And that the speed increases a bit more when jumping,
         but these jump speed increases decreases as speed gets above 500 because the view
-        angle is not perfect.<br/> Max speed reached was 503.</figcaption>
+        angle is not perfect.<br/> Max speed reached is 503.</figcaption>
     </figure>
 
     <figure>
@@ -337,7 +338,7 @@
         jump" plot shows that the view angle is good most of the time. But even so the
         speed does not get above 566. <br/>The "Speed history" plot shows heavy
         fluctuations because tiny mistakes decrease speed significantly when going fast
-        enough. <br/> Max speed reached was 566 and the final time was about
+        enough. <br/> Max speed reached is 566 and the final time is about
         0:10.80.</figcaption>
     </figure>
     
@@ -346,8 +347,22 @@
         <source src=powerbunnyhop_from_circlejump_100m_crashfort.dem.webm /></video>
       <figcaption>Current best 100m time by Crashfort. <br/>Demos does not record key presses
         so the view angle calculation is missing. But the "Speed history" plot shows how
-        much speed is possible.<br/>Max speed reached was 672 and the final time was
+        much speed is possible.<br/>Max speed reached is 672 and the final time is
         0:09.59.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=100m_karol.dem.webm /></video>
+      <figcaption>100m time by Karol in 0:10.10 using a different method. <br/>Demos does
+        not record key presses so the view angle calculation is missing.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=100m_blacksecret.dem.webm /></video>
+      <figcaption>100m time by Blacksecret in 0:10.30 using a different method. <br/>Demos
+        does not record key presses so the view angle calculation is missing.</figcaption>
     </figure>
 
     <p>Training power bunny hopping tips:
@@ -369,11 +384,100 @@
         <li>Train by only attempting a power bunny hop every second jump. This reduces the
           button masking while building muscle memory. Look at the "Speed history" plot
           for big decrease in speed to check if you missed the landing view angle.</li>
+        <li>Train by using <tt>sv_speedhelppower 1</tt> to build muscle memory of the
+        angle view on landing.</li>
         <li>Bunny hopping require many things happening very quickly and very
           precisely. The only way to train it is to build muscle memory.</li>
       </ul>
     </p>
 
+    <h2 id=tas>Tool assisted speed</h2>
+    
+    <p>TAS Quake uses different techniques that utilize joysticks and
+      super precision to maximize speed while ensuring the recording is
+      fun to watch.</p>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=tas_100m_tasquake.dem.webm /></video>
+      <figcaption>Best TAS 100m time
+        using <a href="https://github.com/lipsanen/TASQuake">TASQuake</a>. <br/>Demos does
+        not record key presses so the view angle calculation is missing. But the "Speed
+        history" plot shows how much speed is possible.<br/>Max speed reached is 702 and
+        the final time is 0:08.97.</figcaption>
+    </figure>
+
+    <p>We can also use tools to maximize speed but apply them to the normal movement speed
+      techniques. These commands change the view angle to gain the most speed.</p>
+
+    <p><ul>
+        <li><tt>sv_speedhelppower 1</tt>: This helps with the power-part of power bunny
+          hopping. It changes the view angle when landing to minimize speed lost due to
+          ground friction.</li>
+        <li><tt>sv_speedhelpbunny 1</tt>: This helps with bunny hopping. It changes the
+          view angle when in the air to maximize speed gained from speed turning. This
+          turns very fast which makes it difficult to move in a straight line. The
+          solution is to change direction more often when in the air, but that requires
+          retraining a lot of muscle memory. <tt>sv_speedhelpbunny 10</tt> changes the
+          angle a maximum of +-10 degrees, this is a good value for going forward, because
+          it does not turn too fast to handle. If going for maximum speed a good value is
+          <tt>sv_speedhelpbunny 70</tt> so the view angle always jumps to the other side
+          when changing strafing direction.</li>
+        <li><tt>sv_speedhelpview 0</tt>: This stops updating the seen view angle, but
+          changes the view angle just before the speed calculations are made. So speed is
+          increased from helper commands but the view angle is not affected.</li>
+      </ul></p>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=tas_100m_update_view.webm /></video>
+      <figcaption>TAS 100m run that updates view angle. This is difficult to control
+        because the tool turns too fast and makes it difficult to go in a straight
+        line. <br/>Max speed reached is 648 but the final time is slow.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=tas_100m_update_wish.webm /></video>
+      <figcaption>TAS 100m run that does not update view angle. Not updating the view
+      angle means the air turning move sideways more than normally and thus does not go in
+      a straight line. <br/>Max speed reached is still 648 and the final time is still
+      slow at 0:10.75.</figcaption>
+    </figure>
+
+    <p>Using speed helpers we can test maximum speeds for the separate techniques. These
+    demonstrations use a larger map <a href="manym.bsp">manym.bsp</a>.</p>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=tas_manym_power.webm /></video>
+      <figcaption>TAS manym run using only <tt>sv_speedhelppower 1</tt>. We can see how
+        just the power-part of power bunny hopping increases speed up to 481.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=tas_manym_bunny.webm /></video>
+      <figcaption>TAS manym run using only <tt>sv_speedhelpbunny 1</tt>. We can see how
+      just speed turning in the air increases speed up to 595 going forward and 630 when
+      going in a circle.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=tas_manym_bunny_power.webm /></video>
+      <figcaption>TAS manym run using both <tt>sv_speedhelppower 1</tt> and <tt>sv_speedhelpbunny
+          70</tt>. We can see that power bunny hopping increases speed up to 750.</figcaption>
+    </figure>
+
+    <figure>
+      <video controls loop autoplay muted>
+        <source src=tas_manym_tasquake.dem.webm /></video>
+      <figcaption>TAS manym run using TASQuake. Demos does not record key presses so the
+        view angle calculation is missing. We can see using all tricks increases speed up
+        to 753 in less time.</figcaption>
+    </figure>
+    
     <h2 id=more>More</h2>
     Quake speed techniques resources:
     <ul>
@@ -393,6 +497,8 @@
       <li><a href="https://www.youtube.com/watch?v=v6jm9iGW2Co">Quake 1: Guide to bunny
           hop</a>: A upload of old video. It talk about QuakeWorld, so its bunny hopping guide
         wont help much for Netquake.</li>
+      <li><a href="https://github.com/lipsanen/TASQuake">TASQuake</a>: Quake engine to
+        make tool-assisted speedruns.</li>
     </ul>
 
     <h2 id=document>Document</h2>
@@ -402,6 +508,7 @@
     <p>History:
       <ul>
         <li>2022-07-24: Version 1.
+        <li>2022-07-25: Version 2. Add TAS section.
       </ul>
     </p>
     <p xmlns:dct="http://purl.org/dc/terms/">
