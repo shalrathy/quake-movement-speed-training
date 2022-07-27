@@ -142,8 +142,7 @@
     </figure>
 
     <p>To train zigzagging just hit strafe keys as fast as possible. I do not think human
-      reaction times will be fast enough to reduce speed. Zigzagging is the technique
-      giving the slowest speed increase, so only use it when other techniques wont work.</p>
+      reaction times will be fast enough to reduce speed.</p>
     
     <h2 id=wallhugging>Wallhugging</h2>
 
@@ -208,12 +207,15 @@
 
     <p>Other tips:
       <ul>
-        <li>Move forward a bit to get up to speed 320 before starting the turn into the circle
-          jump.</li>
+        <li>Move forward a bit to get up to speed 320 before starting the turn into the circle-jump.</li>
         <li>Bind key to <tt>restart</tt> to quickly make many attempts from a consistent state.</li>
-        <li>Do many circle-jumps right after each other to train circle-jumping in different situations.</li>
+        <li>Do many circle-jumps right after each other to train circlejumping in
+          different situations.</li>
         <li>Train circle-jumping turning both directions.</li>
-        <li>Circle-jumping require many things happening very quickly and very
+        <li>A good circle-jump lets you jump directly to the gold key
+          in <tt>e1m6</tt>. Training that jump also trains how to jump the furthest off a
+          ledge.</li>
+        <li>Circle jumping require many things happening very quickly and very
           precisely. The only way to train it is to build muscle memory.</li>
     </ul></p>
 
@@ -290,8 +292,8 @@
       regular bunny hopping in QuakeWorld is faster than power bunny hopping in
       Netquake.</p>
 
-    <p>Power bunny hopping requires that "Always run" is off and run is always enabled. To
-      ensure this is the case, run the commands <tt>cl_alwaysrun 0</tt>
+    <p>Power bunny hopping is easier when "Always run" is off and run is always
+      enabled. To ensure this is the case, run the commands <tt>cl_alwaysrun 0</tt>
       and <tt>+speed</tt>.</p>
 
     <p>Power bunny hopping is still speed turning. But speed turning is different in the
@@ -390,6 +392,15 @@
           precisely. The only way to train it is to build muscle memory.</li>
       </ul>
     </p>
+
+    <p>Always run off/on sets <tt>cl_forwardspeed</tt> to 200/400. With always run off
+      <tt>-speed</tt>/<tt>+speed</tt> sets max walking speed to 192/320. With always run
+      on the wish vector is different because the forward vector distance is 800 (vs. 400
+      with always run off). The only noticeable difference with always run on is that I do
+      not move sideways when hopping, and I can only build speed up to
+      460. Using <tt>sv_speedhelppower 1</tt> builds the same speed with always run off or
+      on, and the best view angles are similar. I do not understand why its easier to
+      power bunny hop without always run off.</p>
 
     <h2 id=tas>Tool assisted speed</h2>
     
