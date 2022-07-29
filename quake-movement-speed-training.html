@@ -42,6 +42,21 @@
     Commands:
     <ul>
       <li><tt>scr_speed 4</tt>: Draw speed text and plots.</li>
+      <li><tt>scr_speed 24</tt>: Show jump info under cursor about each
+        jump. E.g. "<tt>&lt;^ 14 - 6 = 496 +7 30% -8</tt>" which means that for this jump:
+        <ul>
+          <li><tt>&lt;</tt> Strafe left key was down</li>
+          <li><tt>^</tt> Forward key was down</li>
+          <li><tt>14</tt> Speed was increased by 14 due to turning in the air</li>
+          <li><tt>-6</tt> Speed was decreased by 6 due to ground friction</li>
+          <li><tt>496</tt> The current speed is 496</li>
+          <li><tt>+7</tt> Which is 7 faster than the previous jump</li>
+          <li><tt>30%</tt> This jump increased speed 30% of what was maximum possible with
+            perfect view angles at every frame</li>
+          <li><tt>-8</tt> View angle should have been 8 degrees to the left for best speed
+            due to ground friction.</li>
+        </ul>
+      </li>
       <li><tt>scr_speed_scale 5</tt>: Increase size of speed text and plots.</li>
       <li><tt>scr_speed_history 100</tt>: Change time plots record, 100 is 10
         seconds.</li>
@@ -89,52 +104,53 @@
       for circle jumping.</p>
     
     <figure>
-      <video controls loop autoplay muted><source src=turning_cl_anglespeedkey_1.5.webm /></video>
+      <video controls loop muted><source src=turning_cl_anglespeedkey_1.5.webm /></video>
       <figcaption>Increase speed up to 418 by turning (<tt>cl_anglespeedkey 1.5</tt>
         (default)).<br/>"Speed angle now" plot shows that if we turned more we would gain more
         speed.</figcaption>
     </figure>
     
     <figure>
-      <video controls loop autoplay muted><source src=turning_cl_anglespeedkey_3.0.webm /></video>
+      <video controls loop muted><source src=turning_cl_anglespeedkey_3.0.webm /></video>
       <figcaption>Increase speed up to 380 by turning too much (<tt>cl_anglespeedkey
           3.0</tt>).<br/>"Speed angle now" plot shows that if we turned less we would gain more
         speed.</figcaption>
     </figure>
     
     <figure>
-      <video controls loop autoplay muted><source src=turning_cl_anglespeedkey_2.15.webm /></video>
+      <video controls loop muted><source src=turning_cl_anglespeedkey_2.15.webm /></video>
       <figcaption>Increase speed up to 493 by turning just the right amount
         (<tt>cl_anglespeedkey 2.15</tt>).<br/>"Speed angle now" plot shows that turning
         more or less would decrease our speed.</figcaption>
     </figure>
 
-    <p>To train speed turning you can look at the "speed angle now" plot while turning the
-      mouse. Make a constant turning angle that keeps the "speed angle now" plot center at
-      the peak speed increase. You can use <tt>scr_draw_angles 45</tt> to better see the
-      speed peak in the "speed angle now" plot. Using <tt>host_framerate 0.005</tt> more clearly shows
-      the best turning speed, but the timing is different so training with slowmo is
-      unproductive. Speed turning is unlikely to be helpful in real Quake situations.</p>
+    <p>To train speed turning you can look at the "speed angle now" plot
+      (with <tt>scr_speed 3</tt>) while turning the mouse. Make a constant turning angle
+      that keeps the "speed angle now" plot center at the peak speed increase. You can
+      use <tt>scr_speed_angles 45</tt> to better see the speed peak in the "speed angle
+      now" plot. Using <tt>host_framerate 0.005</tt> more clearly shows the best turning
+      speed, but the timing is different so training with slowmo is unproductive. Speed
+      turning is unlikely to be helpful in real Quake situations.</p>
     
     <h2 id=zigzagging>Zigzagging</h2>
 
     <p>Strafing left and right in quick succession increases speed up to 405.</p>
     
     <figure>
-      <video controls loop autoplay muted><source src=zigzag_realtime.webm /></video>
+      <video controls loop muted><source src=zigzag_realtime.webm /></video>
       <figcaption>Quickly strafing left and right increases speed up to 405.<br/>The speed
         history plot shows speed increases with big fluctuations.</figcaption>
     </figure>
 
     <figure>
-      <video controls loop autoplay muted><source src=zigzag_one_zig_one_zag.webm /></video>
+      <video controls loop muted><source src=zigzag_one_zig_one_zag.webm /></video>
       <figcaption>Slowmo. The "Speed angle now" plot first shows speed increase up to
         320 by going forward.<br/>Then when strafing the "speed angle now" plot momentarily
         change shape the current view angle quickly goes past a peak of speed increase.</figcaption>
     </figure>
     
     <figure>
-      <video controls loop autoplay muted><source src=zigzag_slowmo.webm /></video>
+      <video controls loop muted><source src=zigzag_slowmo.webm /></video>
       <figcaption>Slowmo. The "Speed angle now" plot show that we get a momentary
         increase in speed by strafing in one direction, and get another momentary increase in
         speed by strafing in the opposite direction, when the angle has gone past the speed
@@ -150,15 +166,15 @@
       changes depending on your horizontal view angle.</p>
 
     <figure>
-      <video controls loop autoplay muted><source src=wallhugging.webm /></video>
+      <video controls loop muted><source src=wallhugging.webm /></video>
       <figcaption>Maximize speed by moving the horizontal view angle so the peak value in
         "speed angle now" is in the center of the plot.</figcaption>
     </figure>
     
     <p>To train wallhugging walk against walls on the left and right and find the perfect
-      viewing angle by looking at the "speed angle now" plot. You can
-      use <tt>scr_draw_angles 45</tt> to better see the speed peak in the "speed angle now"
-      plot.</p>
+      viewing angle by looking at the "speed angle now" plot (with <tt>scr_speed
+      3</tt>). You can use <tt>scr_speed_angles 45</tt> to better see the speed peak in
+      the "speed angle now" plot.</p>
     
     <h2 id=circle_jumping>Circle-jumping</h2>
 
@@ -172,7 +188,7 @@
       speed overall.</p>
     
     <figure>
-      <video controls loop autoplay muted><source src=circlejump_realtime.webm /></video>
+      <video controls loop muted><source src=circlejump_realtime.webm /></video>
       <figcaption>A turn of about 90 degrees giving a speed of 466.<br/>The "speed angle
         now" plot shows that the turning angle is near the peak speed increase for the
         turning part of the circle jump. <br/>The "speed angle jump" plot shows that the
@@ -181,7 +197,7 @@
     </figure>
 
     <figure>
-      <video controls loop autoplay muted><source src=circlejump_slow.webm /></video>
+      <video controls loop muted><source src=circlejump_slow.webm /></video>
       <figcaption>Slowed down version of circle jump of about 90 degrees giving a speed of
         459.<br/>The "speed angle now" plot shows that the turning angle is near the peak
         speed increase for the turning part of the circle jump.<br/>The "speed angle jump"
@@ -191,7 +207,7 @@
     </figure>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=circlejump_cl_anglespeedkey_2.15.webm /></video>
       <figcaption>200 degree perfect circle-jump using only keyboard with <tt>cl_anglespeedkey
           2.15</tt>.</figcaption>
@@ -199,10 +215,12 @@
 
     <p>To train circle-jumping you can split it up into two steps:
       <ol>
-        <li>Do circle-jumps but focus on the "speed angle jump" plot and ensure you
-          jump when the view angle is close to the peak speed increase.</li>
+        <li>Do circle-jumps but focus on the "speed angle jump" plot (with <tt>scr_speed
+          3</tt>) and ensure you jump when the view angle is close to the peak speed
+          increase.</li>
         <li>Do circle-jumps but focus on consistent change in your view angle. Try
-          different turning speeds to maximize <tt>maxspeed</tt>.</li>
+          different turning speeds to maximize <tt>maxspeed</tt> (with <tt>scr_speed
+          1</tt>).</li>
     </ol></p>
 
     <p>Other tips:
@@ -210,7 +228,7 @@
         <li>Move forward a bit to get up to speed 320 before starting the turn into the circle-jump.</li>
         <li>Bind key to <tt>restart</tt> to quickly make many attempts from a consistent state.</li>
         <li>Do many circle-jumps right after each other to train circlejumping in
-          different situations.</li>
+        different situations.</li>
         <li>Train circle-jumping turning both directions.</li>
         <li>A good circle-jump lets you jump directly to the gold key
           in <tt>e1m6</tt>. Training that jump also trains how to jump the furthest off a
@@ -237,7 +255,7 @@
       often change strafe direction and the view angle turning direction.</p>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=bunnyhop_strafe_and_turn_netquake.webm /></video>
       <figcaption>Bunny-hopping by gaining speed the air using speed turning while only
         strafing. <br/>The "speed angle now" plot has tiny peaks of speed increase that
@@ -257,7 +275,7 @@
       there is no limit to how much speed can be gained with bunny hopping.</p>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=bunnyhop_strafe_and_turn_qw.webm /></video>
       <figcaption>Bunny hopping in emulated QuakeWorld (<tt>sv_bunnyhopqw 1</tt>). Final
         speed is 721 compared to the Netquake speed of 501.</figcaption>
@@ -271,9 +289,15 @@
         <li>Train on a big open map like <tt>100m.bsp</tt>.</li>
         <li>Start bunny hopping from a stand-still. Bunny hopping gets more difficult the
           faster you move, so starting with speed 460 (from a good circle-jump) means you
-          have to have perfect bunny hopping turning before seeing any effect. If you
+          have to have perfect bunny hopping turning before increasing speed. If you
           instead start with speed 0 or speed 320 (from walking forward) you can more
           easily see when you are optimally turning the view angle.</li>
+        <li>Look at the speed history plot (wih <tt>scr_speed 2</tt>) to see how much
+          speed you are building. Show plot more clearly by increasing min y-value
+          with <tt>scr_speed_minspeed 300</tt>, or reducing history length with
+          <tt>scr_speed_history 30</tt>.</li>
+        <li>Use <tt>scr_speed 12</tt> and look at the first umber to see how much speed
+          you gain each jump from speed turning in the air.</li>
         <li>Start without changing strafing direction until you get a feel for optimally
           turning the view angle.</li>
         <li>Bunny hopping require many things happening very quickly and very
@@ -311,7 +335,7 @@
       to use in general Quake situations.</p>
     
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=powerbunnyhop_only_look.webm /></video>
       <figcaption>Starting from walking speed. Only do the power part of power bunny
         hopping, so no speed turning in the air. <br/>The "Angle speed jump" plot shows
@@ -322,7 +346,7 @@
     </figure>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=powerbunnyhop_from_walk.webm /></video>
       <figcaption>Power bunny hopping starting from walking speed. <br/>The "Angle speed jump"
         plot shows that the speed increase peaks become smaller as speed increases, and
@@ -334,7 +358,7 @@
     </figure>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=powerbunnyhop_from_circlejump.webm /></video>
       <figcaption>Power bunny hopping starting with circle jump. <br/>The "Angle speed
         jump" plot shows that the view angle is good most of the time. But even so the
@@ -345,7 +369,7 @@
     </figure>
     
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=powerbunnyhop_from_circlejump_100m_crashfort.dem.webm /></video>
       <figcaption>Current best 100m time by Crashfort. <br/>Demos does not record key presses
         so the view angle calculation is missing. But the "Speed history" plot shows how
@@ -354,14 +378,14 @@
     </figure>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=100m_karol.dem.webm /></video>
       <figcaption>100m time by Karol in 0:10.10 using a different method. <br/>Demos does
         not record key presses so the view angle calculation is missing.</figcaption>
     </figure>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=100m_blacksecret.dem.webm /></video>
       <figcaption>100m time by Blacksecret in 0:10.30 using a different method. <br/>Demos
         does not record key presses so the view angle calculation is missing.</figcaption>
@@ -386,8 +410,14 @@
         <li>Train by only attempting a power bunny hop every second jump. This reduces the
           button masking while building muscle memory. Look at the "Speed history" plot
           for big decrease in speed to check if you missed the landing view angle.</li>
-        <li>Train by using <tt>sv_speedhelppower 1</tt> to build muscle memory of the
-        angle view on landing.</li>
+        <li>Train by using <tt>sv_speedhelppower 1</tt> to visualize the best angle view
+          on landing.</li>
+        <li>Train with <tt>scr_speed 23</tt> to see where you can improve each jump. Look
+          at first two characters to verify you are holding down forward and a strafe key
+          on the landing frame. Look at the second number to see how much speed you
+          lose/gain to ground friction on the landing frames. Look at the last number in
+          the jump info to see how many degrees your view angle was away from giving the
+          most speed on the landing frame.</li>
         <li>Bunny hopping require many things happening very quickly and very
           precisely. The only way to train it is to build muscle memory.</li>
       </ul>
@@ -409,7 +439,7 @@
       fun to watch.</p>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=tas_100m_tasquake.dem.webm /></video>
       <figcaption>Best TAS 100m time
         using <a href="https://github.com/lipsanen/TASQuake">TASQuake</a>. <br/>Demos does
@@ -440,7 +470,7 @@
       </ul></p>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=tas_100m_update_view.webm /></video>
       <figcaption>TAS 100m run that updates view angle. This is difficult to control
         because the tool turns too fast and makes it difficult to go in a straight
@@ -448,7 +478,7 @@
     </figure>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=tas_100m_update_wish.webm /></video>
       <figcaption>TAS 100m run that does not update view angle. Not updating the view
       angle means the air turning move sideways more than normally and thus does not go in
@@ -460,14 +490,14 @@
     demonstrations use a larger map <a href="manym.bsp">manym.bsp</a>.</p>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=tas_manym_power.webm /></video>
       <figcaption>TAS manym run using only <tt>sv_speedhelppower 1</tt>. We can see how
         just the power-part of power bunny hopping increases speed up to 481.</figcaption>
     </figure>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=tas_manym_bunny.webm /></video>
       <figcaption>TAS manym run using only <tt>sv_speedhelpbunny 1</tt>. We can see how
       just speed turning in the air increases speed up to 595 going forward and 630 when
@@ -475,14 +505,14 @@
     </figure>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=tas_manym_bunny_power.webm /></video>
       <figcaption>TAS manym run using both <tt>sv_speedhelppower 1</tt> and <tt>sv_speedhelpbunny
           70</tt>. We can see that power bunny hopping increases speed up to 750.</figcaption>
     </figure>
 
     <figure>
-      <video controls loop autoplay muted>
+      <video controls loop muted>
         <source src=tas_manym_tasquake.dem.webm /></video>
       <figcaption>TAS manym run using TASQuake. Demos does not record key presses so the
         view angle calculation is missing. We can see using all tricks increases speed up
