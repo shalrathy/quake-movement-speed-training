@@ -3,6 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       body { max-width:800px; margin:40px auto; line-height:1.6 }
+      figure { border:1px solid #000; padding:5px; }
     </style>
     <title>Quake Movement Speed Training</title>
   </head>
@@ -32,6 +33,7 @@
         <li><a href=#circle_jumping>Circle-jumping</a></li>
         <li><a href=#bunny_hopping>Bunny hopping</a></li>
         <li><a href=#power_bunny_hopping>Power bunny hopping</a></li>
+        <li><a href=#plots>Plots</a></li>
         <li><a href=#tas>Tool assisted speed</a></li>
         <li><a href=#more>More</a></li>
       </ul>
@@ -124,6 +126,18 @@
         more or less would decrease our speed.</figcaption>
     </figure>
 
+    <figure>
+      <a href=plot_ground_forward_always_run_off.html>
+        <img src=plot_ground_forward_always_run_off.png width=640/></a>
+      <figcaption>Heatmap showing how much speed is gained by looking left/right when
+        moving at different speeds when running forward. Y-axis is traveling speed, x-axis
+        is degrees looking left/right from the direction of movement, green colors indicate
+        traveling speed and look degree increases speed, red colors indicate speed
+        decreases.<br/>We can see that moving forward without looking left/right tops out at
+        about 320. And if we look left/right at just the right angle we top out at slightly
+        less than 500.</figcaption>
+    </figure>
+    
     <p>To train speed turning you can look at the "speed angle now" plot
       (with <tt>scr_speed 3</tt>) while turning the mouse. Make a constant turning angle
       that keeps the "speed angle now" plot center at the peak speed increase. You can
@@ -131,7 +145,7 @@
       now" plot. Using <tt>host_framerate 0.005</tt> more clearly shows the best turning
       speed, but the timing is different so training with slowmo is unproductive. Speed
       turning is unlikely to be helpful in real Quake situations.</p>
-    
+
     <h2 id=zigzagging>Zigzagging</h2>
 
     <p>Strafing left and right in quick succession increases speed up to 405.</p>
@@ -268,6 +282,19 @@
         mashing.</figcaption>
     </figure>
 
+    <figure>
+      <a href=plot_air_left_stand.html>
+        <img src=plot_air_left_stand.png width=640/></a>
+      <figcaption>Heatmap showing how much speed is gained by looking left/right when
+        moving at different speeds in the air while strafing left. Y-axis is traveling
+        speed, x-axis is degrees looking left/right from the direction of movement, green
+        colors indicate traveling speed and look degree increases speed, red colors
+        indicate speed decreases. <br/>The plot is shown one game tick after strafing
+        left. <br/>We can see that we gain speed by turning slightly to the left, the
+        faster traveling speed the narrowed the angle gets. When strafing right the plot
+        is mirrored.</figcaption>
+    </figure>
+    
     <p>Bunny hopping is different in QuakeWorld and
       Netquake/Dosquake/Winquake/GLquake/Regular quake/rq. In QuakeWorld there is no
       ground friction when bunny hopping. This difference means that bunny hopping in
@@ -280,6 +307,7 @@
       <figcaption>Bunny hopping in emulated QuakeWorld (<tt>sv_bunnyhopqw 1</tt>). Final
         speed is 721 compared to the Netquake speed of 501.</figcaption>
     </figure>
+
 
     <p>Training bunny hopping tips:
       <ul>
@@ -323,10 +351,10 @@
     <p>Power bunny hopping is still speed turning. But speed turning is different in the
       air vs. on the ground, and we are only on the ground for one game tick. The optimal
       view angle when on the ground, and moving forward, and strafing, and moving above
-      450 is looking almost forward. The optimal view angle when in the air, and not
-      moving forward, and strafing is continually turning into the strafing direction. So
-      power bunny hopping requires quickly and precisely switching between these two types
-      of speed turning.</p>
+      450 is turning slightly into the strafing direction. The optimal view angle when in
+      the air, and not moving forward, and strafing is continually turning into the
+      strafing direction. So power bunny hopping requires quickly and precisely switching
+      between these two types of speed turning.</p>
 
     <p>The more speed you have the more ground friction reduces speed. This means that
       getting a single power bunny hop can take away all speed increases from several
@@ -348,13 +376,12 @@
     <figure>
       <video controls loop muted>
         <source src=powerbunnyhop_from_walk.webm /></video>
-      <figcaption>Power bunny hopping starting from walking speed. <br/>The "Angle speed jump"
-        plot shows that the speed increase peaks become smaller as speed increases, and
-        the peaks get steeper making it more difficult to set the view angle correctly.
-        <br/>The "Speed history" plot shows that speed continually increases a little due to
-        speed turning in the air. And that the speed increases a bit more when jumping,
-        but these jump speed increases decreases as speed gets above 500 because the view
-        angle is not perfect.<br/> Max speed reached is 503.</figcaption>
+      <figcaption>Power bunny hopping starting from walking speed. <br/>The "Angle speed
+        jump" plot shows that the speed increase peaks become smaller as speed increases,
+        and the peaks get steeper making it more difficult to set the view angle
+        correctly.  <br/>The "Speed history" plot shows that speed continually increases a
+        little due to speed turning in the air. And that the speed increases a bit more
+        when jumping up to 500.<br/> Max speed reached is 503.</figcaption>
     </figure>
 
     <figure>
@@ -391,6 +418,33 @@
         does not record key presses so the view angle calculation is missing.</figcaption>
     </figure>
 
+    <figure>
+      <a href=plot_ground_left_always_run_off.html>
+        <img src=plot_ground_left_always_run_off.png width=640/></a>
+      <figcaption>Heatmap showing how much speed is gained by looking left/right when
+        moving at different speeds at the game tick on the ground between jumps. Y-axis is
+        traveling speed, x-axis is degrees looking left/right from the direction of
+        movement, green colors indicate traveling speed and look degree increases speed,
+        red colors indicate speed decreases.<br/> The plot shows that looking slightly
+        into the turning direction increases speed up to 500. And the higher the speed,
+        the narrower the view angles that increase speed.
+      </figcaption>
+    </figure>
+
+    <figure>
+      <a href=plot_ground_left_always_run_on.html>
+        <img src=plot_ground_left_always_run_on.png width=640/></a>
+      <figcaption>Heatmap showing how much speed is gained by looking left/right when
+        moving at different speeds at the game tick on the ground between jumps. Y-axis is
+        traveling speed, x-axis is degrees looking left/right from the direction of
+        movement, green colors indicate traveling speed and look degree increases speed,
+        red colors indicate speed decreases.<br/> This plot shows what happens when always
+        run is on. The optimal view angle is now farther away from straight ahear and its
+        the opposite direction to the strafing direction. This explains why it is more
+        difficult to power bunny hop when always run is on.
+      </figcaption>
+    </figure>
+
     <p>Training power bunny hopping tips:
       <ul>
         <li>Start with a circle-jump. The view angle is pretty consistently straight
@@ -423,14 +477,48 @@
       </ul>
     </p>
 
-    <p>Always run off/on sets <tt>cl_forwardspeed</tt> to 200/400. With always run off
-      <tt>-speed</tt>/<tt>+speed</tt> sets max walking speed to 192/320. With always run
-      on the wish vector is different because the forward vector distance is 800 (vs. 400
-      with always run off). The only noticeable difference with always run on is that I do
-      not move sideways when hopping, and I can only build speed up to
-      460. Using <tt>sv_speedhelppower 1</tt> builds the same speed with always run off or
-      on, and the best view angles are similar. I do not understand why its easier to
-      power bunny hop without always run off.</p>
+    <h2 id=plots>Plots</h2>
+
+    There are four speeds you can move forward:
+    <ul>
+      <li>Speed 0: Standing still. (<tt>cl_alwaysrun 0; -speed; -forward</tt>)</li>
+      <li>Speed 200: Moving forward with always run off and running key disabled
+        (<tt>cl_alwaysrun 0; -speed; +forward</tt>).</li>
+      <li>Speed 400: Moving forward with always run off and the running enabled
+        (<tt>cl_alwaysrun 0; +speed; +forward</tt>).</li>
+      <li>Speed 800: Moving forward with always run on and running key enabled
+        (<tt>cl_alwaysrun 1; +speed; +forward</tt>).</li>
+    </ul>
+    These different forward speeds changes the normalized vectors that ends up increasing
+    speed by turning.
+
+    <figure>
+      <a href=plots_ground.png><img src=plots_ground.png width=1280/></a>
+      <figcaption>Heatmap showing how much speed is gained by looking left/right when
+        moving at different speeds on the ground. Y-axis is traveling speed, x-axis is
+        degrees looking left/right from the direction of movement, green colors indicate
+        traveling speed and look degree increases speed, red colors indicate speed
+        decreases. <br />These plots show the speed increases for all speeds and strafing
+        directions at the game tick you are on the ground when bunny hopping.<br/> Looking
+        at all speed combinations we can see that strafing and moving forward with +speed
+        and always run off have the speed increases closest to looking straight
+        ahead.</figcaption>
+    </figure>
+
+    <figure>
+      <a href=plots_air.png><img src=plots_air.png width=1280/></a>
+      <figcaption>Heatmap showing how much speed is gained by looking left/right when
+        moving at different speeds in the air. Y-axis is traveling speed, x-axis is
+        degrees looking left/right from the direction of movement, green colors indicate
+        traveling speed and look degree increases speed, red colors indicate speed
+        decreases. <br/>These plots show the speed increases for all speeds and strafing
+        direction after one game tick of that movement. If the plots were on the same game
+        tick the movement was triggered then the max speed increase would be straight
+        ahead, that one game tick is not relevant for real gameplay. <br/> Looking at all
+        speed combinations we can see that strafing and not moving forward have the speed
+        increases closest to looking slightly to the strafing direction.</figcaption>
+    </figure>
+
 
     <h2 id=tas>Tool assisted speed</h2>
     
@@ -548,8 +636,9 @@
 
     <p>History:
       <ul>
-        <li>2022-07-24: Version 1.
-        <li>2022-07-25: Version 2. Add TAS section.
+        <li>2022-07-24: Version 1.</li>
+        <li>2022-07-25: Version 2. Add TAS section.</li>
+        <li>2022-08-18: Version 3. Add plots.</li>
       </ul>
     </p>
     <p xmlns:dct="http://purl.org/dc/terms/">
