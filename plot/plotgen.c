@@ -401,41 +401,43 @@ int main() {
     //cmd.forwardmove = 400; // +speed always run off
     //cmd.forwardmove = 800; // +speed always run on
     //cmd.sidemove = 0;
+    //cmd.sidemove = -350; // wal
     cmd.sidemove = -700;
     //cmd.sidemove = 700; 
     //stabilize();
     //SV_AirMove();
     SV_AirMove();
-    plot("plot.html", "foo");
+    //plot("plot.html", "foo");
     //test();
 
     if (false) {
-    velocity[0] = velocity[1] = velocity[2] = 0;
-    velocity[0] = 320;
-    for (int j = 0; j < 2; j++) {
-        for (int dir = 0; dir <= 1; dir++) {
-            cmd.sidemove *= -1;
-            for (int i = 0; i < 6; i++) {
-                sv_player->v.angles[1] = bestAngle();
-                printf("vel=%.0f,%.0f,%.0f, speed=%.0f, addspeed=%.0f, angle=%.0f, sidemove=%.0f\n",
-                       velocity[0], velocity[1], velocity[2],
-                       sqrt(velocity[0]*velocity[0]+velocity[1]*velocity[1]),
-                       getSpeedAdd(),
-                       sv_player->v.angles[1], cmd.sidemove);
-                SV_AirMove();
-                if (j == 0 && dir == 0 && i == 2) break;
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = 320;
+        for (int j = 0; j < 2; j++) {
+            for (int dir = 0; dir <= 1; dir++) {
+                cmd.sidemove *= -1;
+                for (int i = 0; i < 6; i++) {
+                    sv_player->v.angles[1] = bestAngle();
+                    printf("vel=%.0f,%.0f,%.0f, speed=%.0f, addspeed=%.0f, angle=%.0f, sidemove=%.0f\n",
+                           velocity[0], velocity[1], velocity[2],
+                           sqrt(velocity[0]*velocity[0]+velocity[1]*velocity[1]),
+                           getSpeedAdd(),
+                           sv_player->v.angles[1], cmd.sidemove);
+                    SV_AirMove();
+                    if (j == 0 && dir == 0 && i == 2) break;
+                }
             }
         }
     }
-    }
 
-    if (false) {
+    if (true) {
         for (int a = 0; a < 2; a++) {
             for (int b=0;b<4;b++) {
                 for (int c=0;c<3;c++) {
                     onground = a ? true : false;
                     cmd.forwardmove = b == 0 ? 0 : b == 1 ? 200 : b == 2 ? 400 : 800;
-                    cmd.sidemove = c == 0 ? 0 : c == 1 ? -700 : 700;
+                    float sidemove = b == 1 ? 350 : 700;
+                    cmd.sidemove = c == 0 ? 0 : c == 1 ? -sidemove : sidemove;
                     char n[100];
                     sprintf(n, "plot_%s_%s_%s.html",
                             onground?"ground":"air",

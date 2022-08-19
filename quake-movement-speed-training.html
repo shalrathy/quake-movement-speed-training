@@ -344,9 +344,9 @@
       regular bunny hopping in QuakeWorld is faster than power bunny hopping in
       Netquake.</p>
 
-    <p>Power bunny hopping is easier when "Always run" is off and run is always
-      enabled. To ensure this is the case, run the commands <tt>cl_alwaysrun 0</tt>
-      and <tt>+speed</tt>.</p>
+    <p>Power bunny hopping is easier when "Always run" is off and the run is always
+      pressed. To ensure this is the case, disable "always run" and run the
+      command <tt>+speed</tt>.</p>
 
     <p>Power bunny hopping is still speed turning. But speed turning is different in the
       air vs. on the ground, and we are only on the ground for one game tick. The optimal
@@ -481,13 +481,13 @@
 
     There are four speeds you can move forward:
     <ul>
-      <li>Speed 0: Standing still. (<tt>cl_alwaysrun 0; -speed; -forward</tt>)</li>
-      <li>Speed 200: Moving forward with always run off and running key disabled
-        (<tt>cl_alwaysrun 0; -speed; +forward</tt>).</li>
-      <li>Speed 400: Moving forward with always run off and the running enabled
-        (<tt>cl_alwaysrun 0; +speed; +forward</tt>).</li>
-      <li>Speed 800: Moving forward with always run on and running key enabled
-        (<tt>cl_alwaysrun 1; +speed; +forward</tt>).</li>
+      <li>Forwardspeed 0, sidespeed 0: Standing still.</li>
+      <li>Forwardspeed 200, sidespeed 350: Moving forward with always run off and the run
+      key disabled.</li>
+      <li>Forwardspeed 400, sidespeed 700: Moving forward with always run off and the run
+      key enabled.</li>
+      <li>Forwardspeed 800, sidespeed 700: Moving forward with always run on and the run
+      key enabled.</li>
     </ul>
     These different forward speeds changes the normalized vectors that ends up increasing
     speed by turning.
