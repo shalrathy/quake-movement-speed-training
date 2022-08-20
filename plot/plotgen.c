@@ -394,11 +394,11 @@ int main() {
     //sv_player->v.angles[1] = 0; // left-right look
     //stabilize();
 
-    onground = false;
-    //onground = true;
-    cmd.forwardmove = 0; // stand
+    //onground = false;
+    onground = true;
+    //cmd.forwardmove = 0; // stand
     //cmd.forwardmove = 200; // walk
-    //cmd.forwardmove = 400; // +speed always run off
+    cmd.forwardmove = 400; // +speed always run off
     //cmd.forwardmove = 800; // +speed always run on
     //cmd.sidemove = 0;
     //cmd.sidemove = -350; // wal
@@ -406,8 +406,9 @@ int main() {
     //cmd.sidemove = 700; 
     //stabilize();
     //SV_AirMove();
-    SV_AirMove();
-    //plot("plot.html", "foo");
+    //SV_AirMove();
+    sv_player->v.angles[0] = 30; // look up
+    plot("plot.html", "foo");
     //test();
 
     if (false) {
@@ -430,7 +431,7 @@ int main() {
         }
     }
 
-    if (true) {
+    if (false) {
         for (int a = 0; a < 2; a++) {
             for (int b=0;b<4;b++) {
                 for (int c=0;c<3;c++) {
@@ -454,6 +455,55 @@ int main() {
                     if (!onground) stabilize();
                     plot(n, n2);
                 }
+            }
+        }
+    }
+
+    if (false) {
+        for (int a = -30; a <= 30; a+=10) {
+            for (int c=0;c<3;c++) {
+                onground = true;
+                cmd.forwardmove = 400;
+                float sidemove = 700;
+                cmd.sidemove = c == 0 ? 0 : c == 1 ? -sidemove : sidemove;
+                sv_player->v.angles[0] = a;
+                    
+                char n[100];
+                sprintf(n, "plot_lookupdown_ground_%s_look_%d.html",
+                        c==0?"forward":c==1?"left":"right",
+                        a);
+                char n2[100];
+                sprintf(n2, "Ground forward %s, look %d",
+                        c==0?"":c==1?"Left":"Right", a);
+                velocity[0] = velocity[1] = velocity[2] = 0;
+                //stabilize();
+                //if (!onground) SV_AirMove();
+                if (!onground) stabilize();
+                plot(n, n2);
+            }
+        }
+    }
+    if (false) {
+        for (int a = -30; a <= 30; a+=10) {
+            for (int c=0;c<3;c++) {
+                onground = false;
+                cmd.forwardmove = 0;
+                float sidemove = 700;
+                cmd.sidemove = c == 0 ? 0 : c == 1 ? -sidemove : sidemove;
+                sv_player->v.angles[0] = a;
+                    
+                char n[100];
+                sprintf(n, "plot_lookupdown_air_%s_look_%d.html",
+                        c==0?"forward":c==1?"left":"right",
+                        a);
+                char n2[100];
+                sprintf(n2, "Air %s, look %d",
+                        c==0?"":c==1?"Left":"Right", a);
+                velocity[0] = velocity[1] = velocity[2] = 0;
+                //stabilize();
+                //if (!onground) SV_AirMove();
+                if (!onground) stabilize();
+                plot(n, n2);
             }
         }
     }
@@ -488,6 +538,54 @@ plot_air_left_always_run_on.png \
 plot_air_forward_always_run_on.png \
 plot_air_right_always_run_on.png \
 -geometry +2-2 -tile 3x4 plots_air.png
+
+montage \
+plot_lookupdown_ground_left_look_-30.png \
+plot_lookupdown_ground_forward_look_-30.png \
+plot_lookupdown_ground_right_look_-30.png \
+plot_lookupdown_ground_left_look_-20.png \
+plot_lookupdown_ground_forward_look_-20.png \
+plot_lookupdown_ground_right_look_-20.png \
+plot_lookupdown_ground_left_look_-10.png \
+plot_lookupdown_ground_forward_look_-10.png \
+plot_lookupdown_ground_right_look_-10.png \
+plot_lookupdown_ground_left_look_0.png \
+plot_lookupdown_ground_forward_look_0.png \
+plot_lookupdown_ground_right_look_0.png \
+plot_lookupdown_ground_left_look_10.png \
+plot_lookupdown_ground_forward_look_10.png \
+plot_lookupdown_ground_right_look_10.png \
+plot_lookupdown_ground_left_look_20.png \
+plot_lookupdown_ground_forward_look_20.png \
+plot_lookupdown_ground_right_look_20.png \
+plot_lookupdown_ground_left_look_30.png \
+plot_lookupdown_ground_forward_look_30.png \
+plot_lookupdown_ground_right_look_30.png \
+-geometry +2-2 -tile 3x7 plots_look_ground.png
+
+montage \
+plot_lookupdown_air_left_look_-30.png \
+plot_lookupdown_air_forward_look_-30.png \
+plot_lookupdown_air_right_look_-30.png \
+plot_lookupdown_air_left_look_-20.png \
+plot_lookupdown_air_forward_look_-20.png \
+plot_lookupdown_air_right_look_-20.png \
+plot_lookupdown_air_left_look_-10.png \
+plot_lookupdown_air_forward_look_-10.png \
+plot_lookupdown_air_right_look_-10.png \
+plot_lookupdown_air_left_look_0.png \
+plot_lookupdown_air_forward_look_0.png \
+plot_lookupdown_air_right_look_0.png \
+plot_lookupdown_air_left_look_10.png \
+plot_lookupdown_air_forward_look_10.png \
+plot_lookupdown_air_right_look_10.png \
+plot_lookupdown_air_left_look_20.png \
+plot_lookupdown_air_forward_look_20.png \
+plot_lookupdown_air_right_look_20.png \
+plot_lookupdown_air_left_look_30.png \
+plot_lookupdown_air_forward_look_30.png \
+plot_lookupdown_air_right_look_30.png \
+-geometry +2-2 -tile 3x7 plots_look_air.png
 
 
          left, forward, right
