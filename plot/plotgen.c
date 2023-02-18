@@ -2,6 +2,8 @@
 #include <math.h>
 #include <string.h>
 
+#define JUMPTIME 0.64
+
 #define	PITCH		0
 #define	YAW		1
 #define	ROLL		2
@@ -58,6 +60,8 @@ cvar_t sv_accelerate = {10};
 cvar_t sv_stopspeed = {100};
 cvar_t sv_friction = {4};
 cvar_t sv_edgefriction = {2};
+cvar_t sv_gravity = {800};
+float ent_gravity = 1.0f;
 
 void init() {
     sv_player->v.movetype = MOVETYPE_WALK;
@@ -255,6 +259,15 @@ float getSpeedAdd() {
     return newspeed - oldspeed;
 }
 
+void tick() {
+    if (!onground)
+        velocity[2] -= ent_gravity * sv_gravity.value * host_frametime;
+    SV_AirMove();
+    for (int i=0;i<3;i++) origin[i] += velocity[i];
+    if (origin[2] < 0) origin[2] = 0;
+    sv.time += host_frametime;
+}
+
 void stabilize() {
     float speed = sqrt(velocity[0]*velocity[0]+velocity[1]*velocity[1]);
     while (true) {
@@ -323,6 +336,23 @@ float bestAngle() {
         }
     }
 
+    float diff = 1.0f;
+    while (diff > 0.0001f) {
+        for (int n = -1; n <= 2; n+=2) {
+            while (true) {
+                sv_player->v.angles[1] = bestangle + n*diff;
+                float newspeed = getSpeedAdd();
+                if (newspeed > bestspeed) {
+                    bestangle = sv_player->v.angles[1];
+                    bestspeed = newspeed;
+                } else {
+                    break;
+                }
+            }
+        }
+        diff /= 10.0f;
+    }
+
     return bestangle;
 }
 
@@ -388,6 +418,313 @@ void plot(char *file, const char *name) {
     fclose(f);
 }
 
+void plot_best_angle(char *file, const char *name, int strafeleft) {
+    FILE *f = fopen(file, "w");
+    
+    int speedfrom = 0;
+    int speedto = 700;
+    float speedinc = 0.1;
+    int anglefrom = -45;
+    int angleto = 45;
+    float angleinc = 0.1;
+
+    fprintf(f, "<html><head><script src=https://cdn.plot.ly/plotly-2.12.1.min.js></script></head><body>\n");
+    fprintf(f, "<div id=plot></div><script>\n");
+    fprintf(f, "var ys = [");
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        fprintf(f, "'%.2f',", speed);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var xs = [");
+    onground = true;
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    // move forward with always run off and strafe right
+    cmd.forwardmove = 400;
+    cmd.sidemove = strafeleft ? -700 : 700;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        float angle = bestAngle();
+        fprintf(f, "'%.2f',", angle);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var xsl1 = [");
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle();
+        float speedadd_target = getSpeedAdd() - 5;
+        while (getSpeedAdd() > speedadd_target && sv_player->v.angles[1] > -45) {
+            sv_player->v.angles[1] -= 0.1;
+        }
+        fprintf(f, "'%.2f',", sv_player->v.angles[1]);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var xsh1 = [");
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle();
+        float speedadd_target = getSpeedAdd() - 5;
+        while (getSpeedAdd() > speedadd_target && sv_player->v.angles[1] < 45) {
+            sv_player->v.angles[1] += 0.1;
+        }
+        fprintf(f, "'%.2f',", sv_player->v.angles[1]);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var xsl2 = [");
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle();
+        float speedadd_target = getSpeedAdd() - 10;
+        while (getSpeedAdd() > speedadd_target && sv_player->v.angles[1] > -45) {
+            sv_player->v.angles[1] -= 0.1;
+        }
+        fprintf(f, "'%.2f',", sv_player->v.angles[1]);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var xsh2 = [");
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle();
+        float speedadd_target = getSpeedAdd() - 10;
+        while (getSpeedAdd() > speedadd_target && sv_player->v.angles[1] < 45) {
+            sv_player->v.angles[1] += 0.1;
+        }
+        fprintf(f, "'%.2f',", sv_player->v.angles[1]);
+    }
+    fprintf(f, "];\n");
+
+    fprintf(f, "var data = [];\n");
+    fprintf(f, "data.push({name:'left angle -10 speed', x:xsl2, y:ys, type:'scatter',line:{dash:'dot',color:'#EE0000'}});\n");
+    fprintf(f, "data.push({name:'left angle -5 speed', x:xsl1, y:ys, type:'scatter',line:{dash:'dot',color:'#777700'}});\n");
+    fprintf(f, "data.push({name:'best angle', x:xs, y:ys, type:'scatter',line:{color:'#00EE00'}});\n");
+    fprintf(f, "data.push({name:'right angle -5 speed', x:xsh1, y:ys, type:'scatter',line:{dash:'dash',color:'#777700'}});\n");
+    fprintf(f, "data.push({name:'right angle -10 speed', x:xsh2, y:ys, type:'scatter',line:{dash:'dash',color:'#EE0000'}});\n");
+    fprintf(f, "Plotly.newPlot('plot', data, {autosize:true, width:900, height:900, title:{text:'%s'}, ", name);
+    fprintf(f, "xaxis:{title:'view angle away from move direction',gridcolor:'#000',range:[-45,45],autorange:false}, ");
+    fprintf(f, "yaxis:{title:'speed',gridcolor:'#000'}},");
+    char pngname[100];
+    strcpy(pngname, file);
+    pngname[strlen(pngname)-strlen(".html")] = 0;
+    fprintf(f, "{toImageButtonOptions:{filename:'%s'}});\n", pngname);
+    fprintf(f, "</script></body></html>\n");
+
+    fclose(f);
+}
+
+void plot_best_angle_speedadd(char *file, const char *name, int strafeleft) {
+    FILE *f = fopen(file, "w");
+    
+    int speedfrom = 0;
+    int speedto = 700;
+    float speedinc = 0.1;
+    int anglefrom = -45;
+    int angleto = 45;
+    float angleinc = 0.1;
+
+    fprintf(f, "<html><head><script src=https://cdn.plot.ly/plotly-2.12.1.min.js></script></head><body>\n");
+    fprintf(f, "<div id=plot></div><script>\n");
+    fprintf(f, "var ys = [");
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        fprintf(f, "'%.2f',", speed);
+    }
+    fprintf(f, "];\n");
+    // move forward with always run off and strafe right
+    onground = true;
+    cmd.forwardmove = 400;
+    cmd.sidemove = strafeleft ? -700 : 700;
+    fprintf(f, "var xs = [");
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle();
+        float speedadd = getSpeedAdd();
+        fprintf(f, "'%.2f',", speedadd);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var xsl1 = [");
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle() - 5;
+        float speedadd = getSpeedAdd();
+        fprintf(f, "'%.2f',", speedadd);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var xsh1 = [");
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle() + 5;
+        float speedadd = getSpeedAdd();
+        fprintf(f, "'%.2f',", speedadd);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var xsl2 = [");
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle() - 10;
+        float speedadd = getSpeedAdd();
+        fprintf(f, "'%.2f',", speedadd);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var xsh2 = [");
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle() + 10;
+        float speedadd = getSpeedAdd();
+        fprintf(f, "'%.2f',", speedadd);
+    }
+    fprintf(f, "];\n");
+
+    float minspeed = 0;
+    float maxspeed = 0;
+
+    fprintf(f, "var data = [];\n");
+    fprintf(f, "data.push({name:'best left angle -10 speed', x:xsl2, y:ys, type:'scatter',line:{dash:'dot',color:'#EE0000'}});\n");
+    fprintf(f, "data.push({name:'best left angle -5 speed', x:xsl1, y:ys, type:'scatter',line:{dash:'dot',color:'#777700'}});\n");
+    fprintf(f, "data.push({name:'best angle speed', x:xs, y:ys, type:'scatter'});\n");
+    fprintf(f, "data.push({name:'best right angle -5 speed', x:xsh1, y:ys, type:'scatter',line:{dash:'dash',color:'#777700'}});\n");
+    fprintf(f, "data.push({name:'best right angle -10 speed', x:xsh2, y:ys, type:'scatter',line:{dash:'dash',color:'#EE0000'}});\n");
+    fprintf(f, "Plotly.newPlot('plot', data, {autosize:true, width:900, height:900, title:{text:'%s'}, ", name);
+    fprintf(f, "xaxis:{title:'speed change',gridcolor:'#000'}, ");
+    fprintf(f, "yaxis:{title:'speed',gridcolor:'#000'}},");
+    char pngname[100];
+    strcpy(pngname, file);
+    pngname[strlen(pngname)-strlen(".html")] = 0;
+    fprintf(f, "{toImageButtonOptions:{filename:'%s'}});\n", pngname);
+    fprintf(f, "</script></body></html>\n");
+
+    fclose(f);
+}
+
+void plot_best_angle_and_addspeed(char *file, char *name) {
+    FILE *f = fopen(file, "w");
+    
+    int speedfrom = 320;
+    int speedto = 700;
+    float speedinc = 0.1;
+    int anglefrom = -45;
+    int angleto = 45;
+    float angleinc = 0.1;
+
+    fprintf(f, "<html><head><script src=https://cdn.plot.ly/plotly-2.12.1.min.js></script></head><body>\n");
+    fprintf(f, "<p>%s</p>\n", name);
+    fprintf(f, "<div id=plot></div><script>\n");
+    fprintf(f, "var xs = [");
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        fprintf(f, "'%.2f',", speed);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var ys1 = [");
+    onground = true;
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    // move forward with always run off and strafe right
+    cmd.forwardmove = 400;
+    cmd.sidemove = 700;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        float angle = bestAngle();
+        fprintf(f, "'%.2f',", angle);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var ys1l = [");
+    onground = true;
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    // move forward with always run off and strafe right
+    cmd.forwardmove = 400;
+    cmd.sidemove = 700;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle();
+        float speedlow = getSpeedAdd() * 0.8;
+        while (getSpeedAdd() > speedlow) {
+            sv_player->v.angles[1] -= 0.01;
+        }
+        fprintf(f, "'%.2f',", sv_player->v.angles[1]);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var ys1r = [");
+    onground = true;
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    // move forward with always run off and strafe right
+    cmd.forwardmove = 400;
+    cmd.sidemove = 700;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle();
+        float speedlow = getSpeedAdd() * 0.8;
+        while (getSpeedAdd() > speedlow) {
+            sv_player->v.angles[1] += 0.01;
+        }
+        fprintf(f, "'%.2f',", sv_player->v.angles[1]);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var ys2 = [");
+    onground = true;
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    // move forward with always run off and strafe right
+    cmd.forwardmove = 400;
+    cmd.sidemove = 700;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = bestAngle();
+        float speedadd = getSpeedAdd();
+        fprintf(f, "'%.2f',", speedadd);
+    }
+    fprintf(f, "];\n");
+    fprintf(f, "var ys2fwd = [");
+    onground = true;
+    velocity[0] = velocity[1] = velocity[2] = 0;
+    // move forward with always run off and strafe right
+    cmd.forwardmove = 400;
+    cmd.sidemove = 700;
+    for (float speed = speedfrom; speed <= speedto; speed += speedinc) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = speed;
+        sv_player->v.angles[1] = 0;
+        float speedadd = getSpeedAdd();
+        fprintf(f, "'%.2f',", speedadd);
+    }
+    fprintf(f, "];\n");
+
+    // todo: add lines showing best angle 90% speed, and 80% speed
+
+    float minspeed = 0;
+    float maxspeed = 0;
+    
+    fprintf(f, "var data = [{name:'best view angle', x:ys1, y:xs, type:'scatter'},\n");
+    fprintf(f, "            {name:'best view angle 90%% speed left', x:ys1l, y:xs, type:'scatter'},\n");
+    fprintf(f, "            {name:'best view angle 90%% speed right', x:ys1r, y:xs, type:'scatter'},\n");
+    fprintf(f, "            {name:'forward view angle speed add', x:ys2fwd, y:xs, xaxis:'x2', type:'scatter'},\n");
+    fprintf(f, "            {name:'best view angle speed add', x:ys2, y:xs, xaxis:'x2', type:'scatter'},];\n");
+    fprintf(f, "Plotly.newPlot('plot', data, {autosize:true, width:900, height:900, \n");
+    fprintf(f, "xaxis:{title:{text:'best view angle',font:{color:'#1f77b4'}},gridcolor:'#000',range:[-30,30]}, \n");
+    fprintf(f, "yaxis:{title:'speed',gridcolor:'#000'},\n");
+    fprintf(f, "xaxis2:{title:{text:'best view angle speed add',font:{color:'#ff7f0e'}},overlaying:'x',side:'top',gridcolor:'#000',range:[-30,30]}},\n");
+    char pngname[100];
+    strcpy(pngname, file);
+    pngname[strlen(pngname)-strlen(".html")] = 0;
+    fprintf(f, "{toImageButtonOptions:{filename:'%s'}});\n", pngname);
+    fprintf(f, "</script></body></html>\n");
+
+    fclose(f);
+}
+
+
 int main() {
     init();
     //velocity[1] = -320;
@@ -407,10 +744,76 @@ int main() {
     //stabilize();
     //SV_AirMove();
     //SV_AirMove();
-    sv_player->v.angles[0] = 30; // look up
-    plot("plot.html", "foo");
+    //sv_player->v.angles[0] = 30; // look up
+    //plot("plot.html", "foo");
     //test();
 
+    if (false) {
+        // vel[2]=604.040649, entgravity=1.000000, sv_gravity=800.000000, frametime=0.014000, time=2.359000
+        // vel[2]=8.840405, entgravity=1.000000, sv_gravity=800.000000, frametime=0.014000, time=3.103000
+        // (0.014+3.103)-2.359 = 0.758
+
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = 320;
+        velocity[2] = 270; // jump
+        onground = false;
+        for (int i = 0; i < 100; i++) {
+            tick();
+            printf("time=%.2f, vel=%.0f,%.0f,%.0f, org=%.0f,%.0f,%.0f\n",
+                   sv.time,
+                   velocity[0], velocity[1], velocity[2],
+                   origin[0], origin[1], origin[2]);
+        }
+    }
+
+    if (false) {
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        velocity[0] = 320;
+        onground = false;
+        cmd.forwardmove = 0;
+        cmd.sidemove = -700;
+        int prevsidemovechange = -100;
+        int prevbestsidemove = 0;
+        for (int i = 0; i <= 200; i++) {
+            int bestsidemove = -700;
+            float bestangle = 0;
+            sv_player->v.angles[1] = bestangle;
+            float bestxspeed = -99;
+            for (int sidemove = -700; sidemove <= 700; sidemove+=1400) {
+                cmd.sidemove = sidemove;
+                for (float a = 0; a <= 45; a+=0.1f) {
+                    for (int sign = -1; sign <= 1; sign+=2) {
+                        sv_player->v.angles[1] = a*sign;
+                        vec3_t oldvel;
+                        for (int j=0;j<3;j++)oldvel[j]=velocity[j];
+                        SV_AirMove();
+                        float xspeed = velocity[0] - oldvel[0];
+                        for (int j=0;j<3;j++)velocity[j]=oldvel[j];
+                        if (xspeed > bestxspeed) {
+                            if (prevbestsidemove != cmd.sidemove && i - prevsidemovechange <= 0) continue;
+                            bestxspeed = xspeed;
+                            bestangle = sv_player->v.angles[1];
+                            bestsidemove = cmd.sidemove;
+                        }
+                    }
+                }
+            }
+            if (prevbestsidemove != bestsidemove)
+                prevsidemovechange = i;
+            prevbestsidemove = bestsidemove;
+
+            printf("%d: xspeed=%.2f, speed=%.2f, angle=%f, side=%d, bestxspeed=%.2f\n", i, velocity[0],
+                   sqrt(velocity[0]*velocity[0]+velocity[1]*velocity[1]), bestangle, bestsidemove, bestxspeed);
+            sv_player->v.angles[1] = bestangle;
+            cmd.sidemove = bestsidemove;
+            SV_AirMove();
+        }
+
+        //100: xspeed=352.09, speed=352, angle=2.400000, side=700
+        //100: xspeed=426.84, speed=427, angle=-2.700000, side=-700
+    }
+
+    
     if (false) {
         velocity[0] = velocity[1] = velocity[2] = 0;
         velocity[0] = 320;
@@ -508,6 +911,47 @@ int main() {
         }
     }
 
+    if (true) {
+        plot_best_angle("plot_bestangle_power_bunny_left.html",
+                        "Best viewing angle vs move direction for power bunny when strafing left", true);
+        plot_best_angle("plot_bestangle_power_bunny_right.html",
+                        "Best viewing angle vs move direction for power bunny when strafing right", false);
+        plot_best_angle_speedadd("plot_bestangle_addspeed_power_bunny_left.html",
+                                 "Best viewing angle speed change for power bunny when strafing left", true);
+        plot_best_angle_speedadd("plot_bestangle_addspeed_power_bunny_right.html",
+                                 "Best viewing angle speed change for power bunny when strafing right", false);
+        /* plot_best_angle_and_addspeed("plot_bestangle_and_speed_power_bunny_right.html", */
+        /*                 "Best viewing angle and speed for power bunny when strafing right"); */
+        // best angle and speed increases for velocities
+        onground = true;
+        velocity[0] = velocity[1] = velocity[2] = 0;
+        cmd.forwardmove = 400;
+        cmd.sidemove = 700;
+        for (int speed = 320; speed < 700; speed++) {
+            velocity[1] = velocity[2] = 0;
+            velocity[0] = speed;
+            float oldspeed = sqrt(velocity[0]*velocity[0]+velocity[1]*velocity[1]);
+            float bestangle = bestAngle();
+            sv_player->v.angles[1] = bestangle;
+            SV_AirMove();
+            float newspeed = sqrt(velocity[0]*velocity[0]+velocity[1]*velocity[1]);
+            printf("speed=%d bestangle=%.2f speedinc=%.2f\n", speed, bestangle, newspeed-oldspeed);
+        }
+
+        /*
+montage \
+plot_bestangle_power_bunny_left.png \
+plot_bestangle_power_bunny_right.png \
+-geometry +2-2 -tile 2x1 plot_bestangle_power_bunny.png
+
+montage \
+plot_bestangle_addspeed_power_bunny_left.png \
+plot_bestangle_addspeed_power_bunny_right.png \
+-geometry +2-2 -tile 2x1 plot_bestangle_addspeed_power_bunny.png
+         */
+    }
+
+    
     /*
 montage \
 plot_ground_left_stand.png \
